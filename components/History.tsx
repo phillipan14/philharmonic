@@ -11,7 +11,7 @@ export interface HistoryItem {
   duration: number;
 }
 
-const STORAGE_KEY = "ai-music-gen-history";
+const STORAGE_KEY = "philharmonic-history";
 
 export function saveToHistory(item: Omit<HistoryItem, "id" | "createdAt">) {
   const history = getHistory();
@@ -20,7 +20,6 @@ export function saveToHistory(item: Omit<HistoryItem, "id" | "createdAt">) {
     id: crypto.randomUUID(),
     createdAt: Date.now(),
   };
-  // Keep latest 20 items
   const updated = [newItem, ...history].slice(0, 20);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   return newItem;
@@ -47,7 +46,6 @@ export default function History() {
 
     const handleStorage = () => setItems(getHistory());
     window.addEventListener("storage", handleStorage);
-    // Also listen for custom event from same-tab updates
     window.addEventListener("history-updated", handleStorage);
     return () => {
       window.removeEventListener("storage", handleStorage);
@@ -58,15 +56,17 @@ export default function History() {
   if (items.length === 0) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[var(--text-primary)]">History</h2>
+        <h2 className="text-sm font-medium uppercase tracking-wider text-[var(--text-tertiary)]">
+          Your tracks
+        </h2>
         <button
           onClick={() => {
             clearHistory();
             setItems([]);
           }}
-          className="text-xs text-[var(--text-secondary)] hover:text-red-400 transition-colors"
+          className="text-xs text-[var(--text-tertiary)] hover:text-red-400 transition-colors"
         >
           Clear all
         </button>

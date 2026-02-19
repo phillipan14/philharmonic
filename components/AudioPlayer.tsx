@@ -39,13 +39,15 @@ export default function AudioPlayer({ audioUrl, prompt }: AudioPlayerProps) {
       let x = 0;
 
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
+        const barHeight = (dataArray[i] / 255) * canvas.height * 0.85;
         const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - barHeight);
-        gradient.addColorStop(0, "rgba(124, 58, 237, 0.6)");
-        gradient.addColorStop(1, "rgba(124, 58, 237, 1)");
+        gradient.addColorStop(0, "rgba(139, 92, 246, 0.4)");
+        gradient.addColorStop(1, "rgba(167, 139, 250, 1)");
 
         ctx.fillStyle = gradient;
-        ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+        ctx.beginPath();
+        ctx.roundRect(x, canvas.height - barHeight, Math.max(barWidth - 1, 1), barHeight, 2);
+        ctx.fill();
         x += barWidth + 1;
       }
     };
@@ -100,67 +102,68 @@ export default function AudioPlayer({ audioUrl, prompt }: AudioPlayerProps) {
   const handleDownload = () => {
     const a = document.createElement("a");
     a.href = audioUrl;
-    a.download = `ai-music-${Date.now()}.flac`;
+    a.download = `philharmonic-${Date.now()}.mp3`;
     a.click();
   };
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-5 space-y-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-4 space-y-3 card-hover">
       <audio
         ref={audioRef}
         src={audioUrl}
+        crossOrigin="anonymous"
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
         onEnded={() => setIsPlaying(false)}
       />
 
-      <p className="text-sm text-[var(--text-secondary)] truncate" title={prompt}>
+      <p className="text-xs text-[var(--text-secondary)] truncate" title={prompt}>
         {prompt}
       </p>
 
       <canvas
         ref={canvasRef}
         width={600}
-        height={80}
-        className="w-full h-20 rounded-lg bg-[var(--bg-primary)]"
+        height={60}
+        className="w-full h-[60px] rounded-lg bg-[var(--bg-primary)]"
       />
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <button
           onClick={togglePlay}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-colors hover:bg-[var(--accent-hover)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-all hover:bg-[var(--accent-hover)] hover:scale-105 active:scale-95"
         >
           {isPlaying ? (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-              <rect x="1" y="0" width="4" height="14" rx="1" />
-              <rect x="9" y="0" width="4" height="14" rx="1" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <rect x="1" y="0" width="3.5" height="12" rx="1" />
+              <rect x="7.5" y="0" width="3.5" height="12" rx="1" />
             </svg>
           ) : (
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor">
-              <path d="M0 0l14 8-14 8z" />
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor">
+              <path d="M0 0l12 7-12 7z" />
             </svg>
           )}
         </button>
 
         <div className="flex-1">
-          <div className="relative h-1.5 rounded-full bg-[var(--bg-tertiary)]">
+          <div className="relative h-1 rounded-full bg-[var(--bg-tertiary)] overflow-hidden">
             <div
-              className="absolute h-full rounded-full bg-[var(--accent)]"
+              className="absolute h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-purple-400 transition-[width] duration-200"
               style={{ width: duration ? `${(currentTime / duration) * 100}%` : "0%" }}
             />
           </div>
         </div>
 
-        <span className="text-xs text-[var(--text-secondary)] tabular-nums">
+        <span className="text-[11px] text-[var(--text-tertiary)] font-mono tabular-nums min-w-[70px] text-right">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
 
         <button
           onClick={handleDownload}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
-          title="Download"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-tertiary)] transition-all hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+          title="Download MP3"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M8 2v8m0 0l-3-3m3 3l3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1" />
           </svg>
         </button>

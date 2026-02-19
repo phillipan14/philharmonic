@@ -16,21 +16,15 @@ export async function POST(request: NextRequest) {
 
     const durationSec = Math.min(Math.max(Number(duration) || 10, 5), 30);
 
-    const audioBuffer = await generateMusic({
+    const audioUrl = await generateMusic({
       prompt: prompt.trim(),
       duration: durationSec,
     });
 
-    return new NextResponse(audioBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "audio/flac",
-        "Content-Disposition": "inline",
-      },
-    });
+    return NextResponse.json({ audioUrl });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to generate music";
-    const status = message.includes("loading") ? 503 : 500;
+    const status = message.includes("Rate limited") ? 429 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }
