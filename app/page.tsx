@@ -168,7 +168,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3">
           <a
-            href="https://github.com/phillipan14/ai-music-gen"
+            href="https://github.com/phillipan14/philharmonic"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--text-secondary)] transition-colors"
